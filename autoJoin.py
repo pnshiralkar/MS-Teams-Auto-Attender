@@ -15,6 +15,7 @@ maxParticipants = curParticipants = 0
 minParticipants = 10
 
 opt = Options()
+opt.add_argument("--headless")
 opt.add_argument("--disable-infobars")
 opt.add_argument("start-maximized")
 opt.add_argument("--disable-extensions")
@@ -119,8 +120,18 @@ def init():
     global minParticipants
     browser.get('https://teams.microsoft.com/_#/calendarv2')    # open calendar tab in teams
     sleep(1)
+    
     with open(os.path.join(os.path.curdir, 'config.json')) as f:
         data = json.load(f)
+    
+    # Import from ENV var if exists
+    if 'MINIMUM_PARTICIPANTS' in os.environ:
+        data['minimumParticipants'] = os.environ['MINIMUM_PARTICIPANTS']
+    if 'USERNAME' in os.environ:
+        data['username'] = os.environ['USERNAME']
+    if 'PASSWORD' in os.environ:
+        data['password'] = os.environ['PASSWORD']
+    
     minParticipants = data['minimumParticipants']
     wait_and_find_ele_by_id('i0116', timeOutDelay).send_keys(data['username'])      # enter username
     wait_and_find_ele_by_id('idSIButton9', timeOutDelay).click()                    # click next
